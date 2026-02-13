@@ -1,0 +1,522 @@
+# Phrases built from training.txt words.
+# Strokes resolved automatically from the word dictionary at load time.
+# Inspired by Jeff's phrasing patterns: subject + verb structures,
+# questions, auxiliary combinations.
+
+# === Subject + verb (simple present/past) ===
+I know
+I think
+I see
+I say
+I mean
+I want
+I can
+I will
+I need
+I said
+I made
+I had
+I did
+I went
+I came
+I was
+I find
+I set
+I use
+I ask
+I look
+I work
+I go
+I take
+I make
+I call
+I try
+I read
+I put
+I give
+I get
+I move
+I show
+I tell
+I change
+
+we have
+we are
+we can
+we need
+we must
+we will
+we want
+we know
+we go
+we see
+we say
+we come
+we make
+we find
+we take
+we use
+we set
+we ask
+we try
+we give
+we get
+we look
+we work
+we move
+we show
+we call
+we read
+we tell
+we think
+we change
+
+you know
+you are
+you can
+you will
+you must
+you need
+you want
+you say
+you see
+you go
+you come
+you make
+you find
+you take
+you use
+you set
+you ask
+you try
+you get
+you give
+you look
+you work
+you read
+you tell
+you think
+you move
+you show
+you call
+you change
+
+he said
+he came
+he has
+he had
+he did
+he went
+he was
+he is
+he made
+he can
+he will
+he may
+he must
+he does
+he set
+
+she said
+she came
+she has
+she had
+she did
+she went
+she was
+she is
+she made
+she can
+she will
+she may
+
+they say
+they have
+they are
+they were
+they came
+they want
+they need
+they will
+they can
+they must
+they know
+they go
+they make
+they find
+they take
+they use
+they do
+they see
+they get
+they give
+they work
+they set
+they move
+they show
+they call
+they try
+they tell
+they think
+they change
+
+it is
+it was
+it does
+it has
+it came
+it can
+it will
+it may
+it must
+
+# === Subject + verb + object/complement ===
+I have the money
+I know the way
+I see the light
+I want the same
+I need more time
+I made a point
+I take the water
+I find the word
+I tell the man
+I ask the question
+I read the word
+I call the people
+I use the water
+I move the line
+I give the money
+I show the picture
+I get the point
+
+we have a house
+we need the money
+we want to go
+we find the way
+we make the world
+we see the people
+we tell the children
+we take a side
+we use the same
+we know the man
+we call the boy
+we set the number
+we show the picture
+
+you have the right
+you know the word
+you see the light
+you need a name
+you make a point
+you find the way
+you want the same
+you use the water
+you get the point
+you take the money
+you tell the man
+you ask the question
+you show the picture
+
+he has the money
+he said the word
+he made the point
+he came back home
+he did good work
+he went down the line
+
+she has the money
+she said the word
+she made the point
+she came back home
+
+they have the money
+they know the way
+they want the same
+they need more time
+they make a point
+they find the word
+they see the light
+they tell the man
+they take the water
+they use the land
+they call the people
+they do good work
+they set the number
+
+it is the same
+it is a number
+it is the right way
+it has a name
+it does the same
+it is very good
+
+# === Questions ===
+who is it
+who has it
+who said it
+who did it
+who came first
+who does it
+who made it
+who is the man
+who is the woman
+who has the money
+who can tell
+who can say
+who will go
+who will come
+
+what is it
+what does it mean
+what did he say
+what did she say
+what do you think
+what do you know
+what do you want
+what do you need
+what do you see
+what do you mean
+what do you say
+what do you call it
+what do you use
+what is the point
+what is the word
+what is the number
+what is the name
+what is the way
+what is the same
+what can I do
+what can I say
+what can we do
+what did they say
+what did they do
+what will you do
+what will he do
+
+where is it
+where is the house
+where is the water
+where is my home
+where is the money
+where are the people
+where are the children
+where did you go
+where did they go
+where did he go
+where did she go
+where do you live
+where do you come from
+where do you work
+where will you go
+where can I find it
+where can I go
+
+when did you go
+when did he come
+when did she say
+when did they come
+when does it end
+when will you come
+when will it end
+when will they go
+when can I go
+when is the time
+
+how does it work
+how did you know
+how did you find it
+how did you do it
+how did you get it
+how did he do it
+how do you spell it
+how do you use it
+how do you make it
+how do you say it
+how do you read it
+how do you know
+how many people
+how much money
+how much time
+how much water
+how much more
+how will you do it
+how can I help
+how can I tell
+how can I find it
+
+why did you go
+why did you say it
+why did he go
+why did she go
+why did they come
+why does it work
+why is it important
+why is it the same
+why do you need it
+why do you want it
+why do you think so
+why do you say so
+why will you go
+why can you tell
+
+# === Verb + preposition/adverb ===
+go down
+go back
+go home
+go in
+go on
+go up
+go over
+go out
+come back
+come in
+come on
+come down
+come up
+come from
+come home
+come out
+look at
+look for
+look up
+look down
+look over
+look back
+look out
+set up
+set down
+set off
+set on
+turn off
+turn on
+turn down
+turn over
+turn back
+turn out
+put down
+put up
+put on
+put off
+put in
+put out
+give back
+give up
+give in
+give out
+find out
+move on
+move up
+move down
+move in
+move out
+move over
+move back
+take off
+take on
+take over
+take up
+take down
+take back
+take out
+get in
+get on
+get up
+get out
+get off
+get back
+get down
+get over
+call on
+call off
+call back
+call out
+call up
+call in
+work on
+work out
+work off
+work over
+show up
+show off
+read on
+read off
+read out
+ask for
+ask about
+
+# === Longer phrases ===
+all of the people
+on the other side
+by the water
+at the same time
+in the same place
+over and over again
+under the big house
+from the old world
+for the first time
+after a long time
+before the end
+the end of the day
+the end of the line
+the sound of water
+a point of light
+the use of money
+the way back home
+out of the house
+some of the people
+many of the children
+most of the time
+each and every day
+only a little more
+very much the same
+something good for you
+nothing to say
+nothing to show
+nothing to give
+the development of the economy
+an important part of the world
+a very good question
+I think it is right
+I know the way home
+I want to go back
+I need to find it
+I said I will go
+I did it for you
+I can see the light
+I can tell the people
+I will show you the way
+I will give you the money
+I will go home now
+I will tell you the word
+I can make it work
+we need to go now
+we want to find the way
+we can do it together
+we have to go home
+we will find a way
+we must go back
+you can do it
+you know the way
+you have to try
+you must go now
+you will find the way
+you are the right one
+you can see the point
+they have the same question
+they did it for the money
+they want to go home
+they came from the old world
+they need to find the way
+they will come back
+he came back for the money
+he said it is the same
+he will tell you the word
+he did it for the people
+she said she will come
+she came from a good place
+she made it for the children
+it is the right time
+it is a good day
+it is the same old thing
+it does good work for the people
+it is important for the world

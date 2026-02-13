@@ -1,5 +1,7 @@
 """GTK4 Application — main window and wiring."""
 
+import random
+
 import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, Gdk, GLib
@@ -21,7 +23,7 @@ class StenodactylusApp(Gtk.Application):
     def _on_activate(self, app):
         # Load dictionary
         self._entries = load_default_dictionary()
-        self._entry_idx = 0
+        self._entry_idx = random.randrange(len(self._entries))
         self._streak = 0
 
         # Chord engine
@@ -235,11 +237,13 @@ class StenodactylusApp(Gtk.Application):
         entry = self._entries[self._entry_idx]
         self._evaluator = ChordEvaluator(entry.strokes)
 
-        # Build stroke text hint
+        # Build stroke text hint (cap at 3 alternatives for readability)
         stroke_strs = []
-        for alt in entry.strokes:
+        for alt in entry.strokes[:3]:
             stroke_strs.append("/".join(stroke_to_string(s) for s in alt))
         stroke_text = " or ".join(stroke_strs)
+        if len(entry.strokes) > 3:
+            stroke_text += f" (+{len(entry.strokes) - 3} more)"
 
         total = self._evaluator.max_sequence_length
         self._word_prompt.set_word(entry.word, total_strokes=total, stroke_text=stroke_text)
@@ -279,10 +283,10 @@ class StenodactylusApp(Gtk.Application):
 
                 # Play reward sound
                 if self._audio:
-                    self._audio.play_reward(min(self._streak, 10))
+                    self._audio.play_reward(self._streak)
 
-                # Advance to next word
-                self._entry_idx += 1
+                # Pick a random next entry
+                self._entry_idx = random.randrange(len(self._entries))
                 GLib.idle_add(self._load_word)
             else:
                 # Multi-stroke: advance progress dots
@@ -303,6 +307,4 @@ class StenodactylusApp(Gtk.Application):
             self._streak_label.set_label("")
 
     def _update_progress(self):
-        total = len(self._entries)
-        current = self._entry_idx + 1
-        self._progress_label.set_label(f"{current}/{total}")
+        self._progress_label.set_label(f"{len(self._entries)} entries")

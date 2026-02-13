@@ -1,3 +1,6 @@
 .claude/
 *.local
 __pycache__/
+venv/
+githubtoken.txt
+tmp/

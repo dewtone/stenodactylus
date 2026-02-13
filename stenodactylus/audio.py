@@ -3,8 +3,9 @@
 Typing voices: 12-voice round-robin pool with three-component key switch model
 (impact + click + thock) adapted from Soundsmith. Blessed parameters embedded.
 
-Reward voices: 4-voice round-robin pool with 10-level harmonic progression
-at 432 Hz base tuning.
+Reward voices: 4-voice round-robin pool with 24-step ascending chord progression
+at 432 Hz tuning. Each chord is a diatonic triad in C major with all-stepwise
+voice leading (no parallel 5ths/octaves). Average pitch strictly increases.
 """
 
 import os
@@ -19,7 +20,47 @@ from .steno import KEY_PAN, STENO_ORDER, STENO_ORDER_INDEX
 
 # 432 Hz tuning
 A4_432 = 432.0
-BASE_FREQ_432 = A4_432 * (2 ** ((60 - 69) / 12))  # C4 at 432 Hz tuning ≈ 257.2 Hz
+
+
+def _midi_to_freq_432(midi: int) -> float:
+    """Convert MIDI note number to frequency in 432 Hz tuning."""
+    return A4_432 * (2 ** ((midi - 69) / 12))
+
+
+# 24-step ascending chord progression: diatonic triads in C major.
+# Voice leading: alternating stepwise motion — bass moves up while upper
+# voices hold, then upper voices move up while bass holds. No parallel
+# 5ths or octaves. Average pitch strictly increases.
+#
+# Each entry is (MIDI_note_1, MIDI_note_2, MIDI_note_3).
+REWARD_PROGRESSION = [
+    (48, 52, 55),   #  1. C3  E3  G3   C
+    (48, 53, 57),   #  2. C3  F3  A3   F/C
+    (50, 53, 57),   #  3. D3  F3  A3   Dm
+    (50, 55, 59),   #  4. D3  G3  B3   G/D
+    (52, 55, 59),   #  5. E3  G3  B3   Em
+    (52, 57, 60),   #  6. E3  A3  C4   Am/E
+    (53, 57, 60),   #  7. F3  A3  C4   F
+    (53, 59, 62),   #  8. F3  B3  D4   G/F
+    (55, 59, 62),   #  9. G3  B3  D4   G
+    (55, 60, 64),   # 10. G3  C4  E4   C/G
+    (57, 60, 64),   # 11. A3  C4  E4   Am
+    (57, 62, 65),   # 12. A3  D4  F4   Dm/A
+    (59, 62, 65),   # 13. B3  D4  F4   Bdim
+    (59, 64, 67),   # 14. B3  E4  G4   Em/B
+    (60, 64, 67),   # 15. C4  E4  G4   C
+    (60, 65, 69),   # 16. C4  F4  A4   F/C
+    (62, 65, 69),   # 17. D4  F4  A4   Dm
+    (62, 67, 71),   # 18. D4  G4  B4   G/D
+    (64, 67, 71),   # 19. E4  G4  B4   Em
+    (64, 69, 72),   # 20. E4  A4  C5   Am/E
+    (65, 69, 72),   # 21. F4  A4  C5   F
+    (67, 71, 74),   # 22. G4  B4  D5   G
+    (69, 72, 76),   # 23. A4  C5  E5   Am
+    (72, 76, 79),   # 24. C5  E5  G5   C
+]
+
+NUM_REWARD_LEVELS = len(REWARD_PROGRESSION)
 
 # Blessed keyboard typing parameters from Soundsmith A/B testing
 TYPING_PARAMS = {
@@ -247,88 +288,69 @@ class AudioEngine:
     def _setup_reward_voices(self):
         """Pre-allocate reward voice pool.
 
-        Each voice has a fundamental + up to 9 harmonic/bell partials.
-        Level controls how many partials sound and envelope duration.
+        Each voice has 3 oscillators (one per chord tone) sharing a single
+        envelope. Frequencies are set at play time from REWARD_PROGRESSION.
         """
         self._reward_voices = []
 
         for _ in range(NUM_REWARD_VOICES):
-            freq_sig = pyo.Sig(BASE_FREQ_432)
             amp_sig = pyo.Sig(0.0)
             pan_sig = pyo.Sig(0.5)
 
-            # Main envelope
             env = pyo.Adsr(
-                attack=0.005, decay=0.15, sustain=0.2, release=0.1,
-                dur=0.4, mul=amp_sig
+                attack=0.008, decay=0.2, sustain=0.15, release=0.15,
+                dur=0.5, mul=amp_sig
             )
 
-            # Harmonic partials: fundamental + bell-like inharmonics
-            # Each partial has its own amplitude signal for level control
-            partial_amps = []
-            partials = []
-            # Ratios: 1.0, 2.0, 3.0, 2.4, 4.5, 5.0, 3.6, 6.0, 7.2, 4.1
-            ratios = [1.0, 2.0, 3.0, 2.4, 4.5, 5.0, 3.6, 6.0, 7.2, 4.1]
-            base_amps = [0.5, 0.3, 0.2, 0.25, 0.15, 0.12, 0.18, 0.10, 0.08, 0.14]
+            # 3 chord-tone oscillators
+            freq_sigs = [pyo.Sig(200.0) for _ in range(3)]
+            oscs = [pyo.Sine(freq=f, mul=env * 0.25) for f in freq_sigs]
 
-            for ratio, base_a in zip(ratios, base_amps):
-                p_amp = pyo.Sig(0.0)
-                partial_amps.append(p_amp)
-                osc = pyo.Sine(freq=freq_sig * ratio, mul=env * p_amp * base_a)
-                partials.append(osc)
-
-            mix = pyo.Mix(partials, voices=1, mul=0.35)
+            mix = pyo.Mix(oscs, voices=1, mul=0.4)
             clipped = pyo.Clip(mix, min=-0.9, max=0.9)
             panned = pyo.Pan(clipped, pan=pan_sig).out()
 
             self._reward_voices.append({
-                "freq": freq_sig,
                 "amp": amp_sig,
                 "pan": pan_sig,
                 "env": env,
-                "partial_amps": partial_amps,
-                "panned": panned,
+                "freqs": freq_sigs,
             })
 
     def play_reward(self, level: int):
-        """Play a reward sound at the given streak level (1-10).
+        """Play a reward chord at the given streak level (1-24).
 
-        Level 1: single 432 Hz sine, short envelope.
-        Each level adds partials and extends decay.
-        Level 10: full harmonic series with bell partials.
+        Each level selects a chord from the ascending diatonic progression.
+        Level 1 is already a full triad. Envelope grows with level.
         """
         if not self._initialized or level < 1:
             return
 
-        level = min(level, 10)
+        level = min(level, NUM_REWARD_LEVELS)
+        chord = REWARD_PROGRESSION[level - 1]
 
         with self._lock:
             voice = self._reward_voices[self._reward_idx]
             self._reward_idx = (self._reward_idx + 1) % NUM_REWARD_VOICES
 
-        # Set frequency (432 Hz tuning, C4)
-        voice["freq"].setValue(BASE_FREQ_432)
+        # Set chord-tone frequencies (432 Hz tuning)
+        for freq_sig, midi in zip(voice["freqs"], chord):
+            freq_sig.setValue(_midi_to_freq_432(midi))
 
-        # Amplitude scales slightly with level
-        amp = 0.12 + level * 0.008
+        # Amplitude: audible from level 1, grows gently
+        amp = 0.15 + level * 0.005
         voice["amp"].setValue(amp)
 
-        # Center pan with slight random variation
+        # Slight random pan variation
         import random
         voice["pan"].setValue(0.5 + random.uniform(-0.1, 0.1))
 
-        # Enable partials based on level
-        for i, p_amp in enumerate(voice["partial_amps"]):
-            if i < level:
-                p_amp.setValue(1.0)
-            else:
-                p_amp.setValue(0.0)
-
-        # Envelope scales with level: longer decay at higher levels
-        attack = 0.005
-        decay = 0.10 + level * 0.04  # 0.14 → 0.50
-        sustain = 0.1 + level * 0.03
-        release = 0.08 + level * 0.03
+        # Envelope: starts satisfying, grows with streak
+        t = level / NUM_REWARD_LEVELS  # 0..1 normalized
+        attack = 0.008
+        decay = 0.15 + t * 0.25       # 0.15 → 0.40
+        sustain = 0.12 + t * 0.15     # 0.12 → 0.27
+        release = 0.12 + t * 0.20     # 0.12 → 0.32
         dur = attack + decay + release + 0.05
 
         voice["env"].setAttack(attack)

@@ -160,22 +160,32 @@ class WordPromptWidget(Gtk.DrawingArea):
         if not self._word:
             return
 
-        # Main word — large centered text
+        # Main word — large centered text, shrinks to fit
         cr.set_source_rgba(0.92, 0.92, 0.95, 1.0)
+        margin = 20
+        max_w = width - 2 * margin
         font_size = min(height * 0.45, width * 0.08)
         cr.set_font_size(font_size)
         extents = cr.text_extents(self._word)
+        if extents.width > max_w and extents.width > 0:
+            font_size *= max_w / extents.width
+            cr.set_font_size(font_size)
+            extents = cr.text_extents(self._word)
         tx = (width - extents.width) / 2 - extents.x_bearing
         ty = height * 0.45 - extents.height / 2 - extents.y_bearing
         cr.move_to(tx, ty)
         cr.show_text(self._word)
 
-        # Stroke hint (smaller, below word)
+        # Stroke hint (smaller, below word), shrinks to fit
         if self._stroke_text:
             cr.set_source_rgba(0.5, 0.5, 0.55, 0.6)
             hint_size = font_size * 0.3
             cr.set_font_size(hint_size)
             extents = cr.text_extents(self._stroke_text)
+            if extents.width > max_w and extents.width > 0:
+                hint_size *= max_w / extents.width
+                cr.set_font_size(hint_size)
+                extents = cr.text_extents(self._stroke_text)
             tx = (width - extents.width) / 2 - extents.x_bearing
             ty = height * 0.68 - extents.height / 2 - extents.y_bearing
             cr.move_to(tx, ty)
